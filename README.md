@@ -34,18 +34,17 @@ To run this application locally, please follow the below steps:
 
 2. Create a MySQL database and update the `application.properties` file with the database credentials.
 
-3. Navigate to the project directory and build the project using the following command:
+3. Navigate to the project directory and build the project using the following command: `./mvnw clean install`
 
-`./mvnw clean install`
+4. Run the application using the following command: `./mvnw spring-boot:run`
 
-4. Run the application using the following command:
-
-`./mvnw spring-boot:run`
-
-5. Access the application using the URL:
-
- `http://localhost:8080/homepage`
+5. Access the application using the URL:  `http://localhost:8080/homepage`
  
+## Database Schema
+
+The project uses the following database schema:
+
+![Database Schema](/schema.png)
  
 ## Usage
 
