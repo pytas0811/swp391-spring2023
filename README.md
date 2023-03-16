@@ -52,6 +52,6 @@ Once you have installed and started the application, you can use it to search fo
 
 ## Credits
 
-This project was developed by [pytas0811](https://github.com/pytas0811) as part of SWP391 at FPT-University.
+This project was developed by [pytas0811](https://github.com/pytas0811) as part of SWP391 group at FPT-University.
 
 
