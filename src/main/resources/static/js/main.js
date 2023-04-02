@@ -87,9 +87,44 @@ function validatePassword() {
     if (password !== repeatPassword) {
         alert("Passwords do not match.");
         return false;
+    } else {
+        document.getElementById("popupRegister").style.display = "block";
+        return true;
     }
 
-    return true;
+}
+
+
+//Popup checkout function
+function popupCheckout() {
+    const checkoutBtn = document.getElementById("checkoutBtn");
+    const popupCheckout = document.getElementById("popupCheckout");
+    const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+
+    if (paymentMethod === "payonbus") {
+        popupCheckout.style.opacity = "99";
+        popupCheckout.style.visibility = "visible";
+    }
+
+}
+
+//Validate form function
+function validateForm() {
+    var radioButtons = document.getElementsByName("paymentMethod");
+    var isSelected = false;
+    for (var i = 0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked) {
+            isSelected = true;
+            break;
+        }
+    }
+    if (!isSelected) {
+        document.getElementById("error").style.display = "block";
+        return false;
+    } else {
+        document.getElementById("error").style.display = "none";
+        return true;
+    }
 }
 
 //Selected seats
@@ -119,20 +154,57 @@ $('.slider-nav').slick({
     focusOnSelect: true
 });
 
-  
 
 
+// Check seat submit button
 function checkSubmitButton() {
-    var checkboxes = document.getElementsByName("selectedSeats");
+    var checkboxes = document.getElementsByName("selectedSeats"); // cái này ông lấy tên từ bên nào qua
     var submitButton = document.getElementById("submit-button");
-  
+    // var selectedSeats = sessionStorage.getItem("SselectedSeats");
+    var checkedCount = 0;
+
     for (var i = 0; i < checkboxes.length; i++) {
-      if (checkboxes[i].checked) {
-        submitButton.disabled = false;
-        
-        return;
-      }
+        if (checkboxes[i].checked) {
+            checkedCount++;
+        }
     }
-    // submitButton.title = disabled;
-    submitButton.disabled = true;
-  }
+
+    if (checkedCount >= 1 && checkedCount <= 5) {
+        submitButton.disabled = false;
+    } else {
+        submitButton.disabled = true;
+    }
+}
+
+$(document).ready(function () {
+    $('#sex').select2();
+});
+
+//===================================================================================
+// Valid search form
+const pickUpPlaceSelect = document.getElementById("pickUpPlace");
+const dropoffPlaceSelect = document.getElementById("dropoffPlace");
+
+pickUpPlaceSelect.addEventListener("change", (event) => {
+    const selectedOptionText = event.target.options[event.target.selectedIndex].text;
+    for (const option of dropoffPlaceSelect.options) {
+        if (option.text === selectedOptionText) {
+            option.disabled = true;
+        } else {
+            option.disabled = false;
+        }
+    }
+});
+
+
+dropoffPlaceSelect.addEventListener("change", (event) => {
+    const selectedOptionText = event.target.options[event.target.selectedIndex].text;
+    for (const option of pickUpPlaceSelect.options) {
+        if (option.text === selectedOptionText) {
+            option.disabled = true;
+        } else {
+            option.disabled = false;
+        }
+    }
+});
+//===================================================================================

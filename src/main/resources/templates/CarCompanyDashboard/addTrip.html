@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Add New Trip</title>
+    <style>
+        .body-add-trip {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin-top: 49.8px;
+            height: 98vh;
+            background-image: linear-gradient(to bottom right, #414141, #000000);
+        }
+
+        .form-add-trip {
+            background-color: whitesmoke;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 600px;
+            margin:  auto;
+            margin-top: 5px;
+            /* margin-bottom: 20px; */
+        }
+
+        .label-add-trip-title {
+            font-weight: bold;
+        }
+
+        .input-add-trip-content {
+            width: 578px;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        .select-add-trip-content {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .btn-save-content-add-trip {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save-content-add-trip:hover {
+            background-color: #43bf47;
+        }
+
+        .btn-cancel-content-add-trip {
+            background-color: rgb(218, 84, 84);
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel-content-add-trip:hover {
+            background-color: rgb(199, 52, 52);
+        }
+
+
+
+        .bx-arrow-back {
+            color: white;
+            font-weight: bold;
+            font-size: 30px;
+            
+        }
+
+        .turn-back-home {
+            margin-top: -45px;
+        }
+
+
+    </style>
+
+
+</head>
+
+<body class="body-add-trip">
+    <div class="turn-back-home"><a href="/route/viewall"><i class='bx bx-arrow-back'></i></a></div>
+    <form th:action="@{/trip/save}" class="form-add-trip">
+        <div>
+            <label for="start-time" class="label-add-trip-title">Start Time:</label>
+            <input type="time" id="start-time" name="startTime" required class="input-add-trip-content">
+        </div>
+        <div>
+            <label for="end-time" class="label-add-trip-title">End Time:</label>
+            <input type="time" id="end-time" name="endTime" required class="input-add-trip-content">
+        </div>
+        <div>
+            <label for="price" style="font-weight: bold;">Price:</label>
+            <input type="number" id="price" name="price" required class="input-add-trip-content">
+        </div>
+
+        <div>
+            <label for="departure-detail" style="font-weight: bold;">Departure Detail:</label>
+            <input type="text" id="departure-detail" name="departureDetail" required class="input-add-trip-content">
+        </div>
+        <div>
+            <label for="arrival-detail" style="font-weight: bold;">Arrival Detail:</label>
+            <input type="text" id="arrival-detail" name="arrivalDetail" required class="input-add-trip-content">
+            <div>
+            </div>
+            <label for="arrival-detail" style="font-weight: bold;">Date:</label>
+            <input type="date" id="arrival-date" name="date" required class="input-add-trip-content">
+            <script>
+                // var today = new Date().toISOString().split('T')[0];
+                // document.getElementById("myDate").setAttribute("min", today);
+                // Get the current date with local time
+                var today = new Date();
+                today.setDate(today.getDate() + 1);
+                var dd = String(today.getDate()).padStart(2, '0');
+                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                var yyyy = today.getFullYear();
+
+                // Format the date into the required string format
+                var minDate = yyyy + '-' + mm + '-' + dd;
+
+                // Set the minimum date of the input element to the formatted date
+                document.getElementById("arrival-date").setAttribute("min", minDate);
+            </script>
+        </div>
+        <div>
+            <label for="route" style="font-weight: bold;">Route:</label>
+            <select id="route" name="route.id" required class="select-add-trip-content">
+                <option value="">--Select a route--</option>
+                <th:block th:each="route : ${routes}">
+                    <option th:value="${route.id}" th:text="${route.departure} + ' - ' + ${route.arrival}"></option>
+                </th:block>
+            </select>
+        </div>
+        <div>
+            <select id="car" name="car.id" required class="select-add-trip-content">
+                <option value="">--Select a car--</option>
+                <th:block th:each="car : ${cars}"
+                    th:if="${car.carCompany != null and car.carCompany.id == currentUserId}">
+                    <option th:value="${car.id}" th:text="${car.plateNumber}"></option>
+                </th:block>
+            </select>
+        </div>
+        <!-- <div th:if="${session.errorCarExist}" class="alert alert-danger" role="alert">
+        </div> -->
+        <p th:text="${session.errorCarExist}" style="color: rgb(244, 67, 54);font-family: Roboto, Helvetica, Arial, sans-serif;"></p>
+        <button type="submit" class="btn-save-content-add-trip">Save</button>
+        <button type="reset" class="btn-cancel-content-add-trip">Cancel</button>
+    </form> 
+</body>
+
+</html>

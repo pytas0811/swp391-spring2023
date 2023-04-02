@@ -11,45 +11,61 @@
     <title>Booking Ticket</title>
 </head>
 
-<head th:replace="fragments/fragments::bookHead"></head>
+<head th:replace="fragments/fragments::homeHead"></head>
 
 
 
 <body>
     <div th:replace="fragments/fragments::bookHeader"></div>
-    <div th:replace="fragments/fragments::bookBanner"></div>
-    <!-- show a list of available tickets for customer -->
-    <div class="container-trip-page">
+    <div th:replace="fragments/fragments::bookBanner">
+        <!-- <script>
+            const pickUpPlaceSelect1 = document.getElementById("pickUpPlace");
+            const dropoffPlaceSelect1 = document.getElementById("dropoffPlace");
 
+            pickUpPlaceSelect1.addEventListener("change", (event) => {
+                const selectedOptionText = event.target.options[event.target.selectedIndex].text;
+                for (const option of dropoffPlaceSelect1.options) {
+                    if (option.text === selectedOptionText) {
+                        option.disabled = true;
+                    } else {
+                        option.disabled = false;
+                    }
+                }
+            });
+        </script> -->
+    </div>
+    <div style="text-align: center;
+    padding-top: 70px;">
         <!-- need to render pick up location and destination that customer choose -->
         <h3 style="font-size: 40px; margin-bottom: 10px;">Pick up location - Destination</h3>
 
         <div class="filter-container">
-            <select name="" id="" class="filter">
-                <option value="">Price</option>
-                <option value="">Thấp - Cao</option>
-                <option value="">Cao - Thấp</option>
-            </select>
 
-            <select name="" id="" class="filter">
+            <button class="btn-sort" onclick="sortTripsByPrice()">Price ASC</button>
+            <button class="btn-sort" onclick="sortTripsByPriceDesc()">Price DESC </button>
+
+            <!-- <select name="" id="" class="filter">
                 <option value="">Type</option>
                 <option value="">Classic</option>
                 <option value="">Limousine</option>
                 <option value="">Bed</option>
-            </select>
+            </select> -->
 
-            <select name="" id="" class="filter">
+            <!-- <select name="" id="" class="filter">
                 <option value="">Time</option>
                 <option value="">0h - 6h</option>
                 <option value="">6h - 12h</option>
                 <option value="">12h - 18h</option>
                 <option value="">18h - 24h</option>
-            </select>
+            </select> -->
+
             </table>
         </div>
+    </div>
+    <!-- show a list of available tickets for customer -->
+    <div class="container-trip-page">
 
-
-        <div class="container-search-trip" th:each="trip: ${listTrips}" >
+        <div class="container-search-trip" th:each="trip: ${listTrips}">
             <form th:action="@{/booking/{id}(id=${trip.id})}" id="myForm">
                 <div class="TicketPC-Container">
                     <div class="TicketPC-BodyFlex">
@@ -61,9 +77,6 @@
                                 <div class="bus-info">
                                     <div class="bus-name" th:text="${trip.car.carCompany.getName()} + ' Busline'">Huệ
                                         Nghĩa</div>
-                                    <!-- <button type="button"
-                                    class="ant-btn-bus-rating-button">
-                                </button> -->
                                 </div>
                                 <div class="seat-type"
                                     th:text="${trip.car.getPlateNumber()} + ' - ' +${trip.car.getCapacity()} + ' Seats'">
@@ -82,12 +95,14 @@
                                     </svg>
                                     <div class="from-to-content">
                                         <div class="content-from">
-                                            <div class="hour" th:text="${#strings.substring(trip.startTime, 0, 5)}">10:50</div>
+                                            <div class="hour" th:text="${#strings.substring(trip.startTime, 0, 5)}">
+                                                10:50</div>
                                             <div class="place" th:text="'• ' + ${trip.departureDetail}">• CD. Châu Đốc
                                             </div>
                                         </div>
                                         <div class="content-to">
-                                            <div class="hour" th:text="${#strings.substring(trip.endTime, 0, 5)}">13:00</div>
+                                            <div class="hour" th:text="${#strings.substring(trip.endTime, 0, 5)}">13:00
+                                            </div>
                                             <div class="place" th:text="'• ' + ${trip.arrivalDetail}">• Cựu Hội</div>
                                         </div>
                                     </div>
@@ -95,19 +110,27 @@
                             </div>
                             <div class="TicketPC-FareInfo">
                                 <div>
-                                    <div class="fare" th:text="${trip.price} +'đ'">
-                                        <div> 160.000đ</div>
-                                    </div>
+<!--                                    <div class="fare" th:text="${trip.price} +'đ'">-->
+<!--                                        <div> 160.000đ</div>-->
+<!--                                    </div>-->
+                                    <div class="fare" th:text="${T(com.laohac.swp391spring2023.controller.PaymentController).formatVND(trip.price)}"></div>
+
+
+
                                     <div class="fareSmall">
                                         <div class="small"></div>
                                     </div>
                                 </div>
                             </div>
                             <div class="TicketPC-DetailAndAction">
-                                <div class="info">
-                                    <div class="seat-available-green">6 seats left </div>
+                                <div th:if="${isSpecialDay}">
+                                    <!-- <span th:text="${isSpecialDay}"></span> -->
+                                    <h5>Prepaid trip</h5>
                                 </div>
-
+                                <div class="info">
+                                    <div class="seat-available-green" th:text="${trip.totalAvailableSeat} + ' seats left'">6 seats left </div>
+                                </div>
+                                
                                 <button data-tracking-event="selected_route" type="submit" class="ant-btn-btn-booking"
                                     style="text-align: right;">
                                     <span>Book now</span>
@@ -121,11 +144,40 @@
             </form>
 
         </div>
-        
+
+        <script>
+            function sortTripsByPriceDesc() {
+                const trips = document.querySelectorAll('.container-search-trip');
+                const sortedTrips = Array.from(trips)
+                    .sort((a, b) => {
+                        const priceA = a.querySelector('.fare').innerText.replace(/[^0-9]/g, '');
+                        const priceB = b.querySelector('.fare').innerText.replace(/[^0-9]/g, '');
+                        return priceA - priceB;
+                    });
+                sortedTrips.forEach(trip => {
+                    trip.parentNode.insertBefore(trip, trip.parentNode.firstChild);
+                });
+            }
+        </script>
+        <script>
+            function sortTripsByPrice() {
+                const trips = document.querySelectorAll('.container-search-trip');
+                const sortedTrips = Array.from(trips)
+                    .sort((a, b) => {
+                        const priceA = a.querySelector('.fare').innerText.replace(/[^0-9]/g, '');
+                        const priceB = b.querySelector('.fare').innerText.replace(/[^0-9]/g, '');
+                        return priceB - priceA;
+                    });
+                sortedTrips.forEach(trip => {
+                    trip.parentNode.insertBefore(trip, trip.parentNode.firstChild);
+                });
+            }
+        </script>
 
         <div th:replace="fragments/fragments::homeScript"></div>
-        
+
 </body>
 <br><br><br>
 <div th:replace="fragments/fragments::bookFooter"></div>
+
 </html>

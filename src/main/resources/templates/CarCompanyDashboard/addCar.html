@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>Add new car form</title>
+    <style>
+        .sidebar {
+            width: 200px;
+            background-color: #f2f2f2;
+            padding: 20px;
+            position: fixed;
+            height: 100%;
+            overflow: auto;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+        }
+
+        .form-wrapper {
+            margin-left: 220px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 200px;
+        }
+
+        .add-route-form {
+            margin: 0 auto;
+            width: 50%;
+        }
+
+        .label-title {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-align: left;
+            color: white;
+            padding: 10px;
+            font-size: 25px;
+        }
+
+        .input-add-route {
+            display: block;
+            margin-bottom: 10px;
+            padding: 15px;
+            width: 100%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .btn-save-add-new-car {
+            background-color: #007bff;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+            display: inline-block;
+            font-size: 16px;
+            margin-top: 10px;
+            padding: 10px 20px;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            border-radius: 3px;
+        }
+
+        .btn-save-add-new-car:hover {
+            background-color: #0069d9;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .navbar>a {
+            color: white;
+        }
+
+        .sidebar>ul {
+            list-style-type: none;
+        }
+
+        .sidebar>ul>li {
+            margin-top: 15px;
+        }
+
+        .bx {
+            margin-right: 10px;
+        }
+
+
+        
+        .add-car-body {
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url(https://images.unsplash.com/photo-1521794414102-37606728dd9c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1471&q=80);
+            background-repeat: no-repeat;
+            background-size: cover;
+            margin: 0;
+            height: 100vh;
+        }
+    </style>
+</head>
+
+<body class="add-car-body">
+    <div class="container">
+        <div class="sidebar">
+            <h3 style="font-size: 30px;">Add Car</h3>
+            <ul>
+                <li><a href="#" style="color: black;"><i class='bx bxs-user'></i>Profile</a></li>
+                <li><a href="#" style="color: black;"><i class='bx bx-log-out'></i>Sign Out</a></li>
+                <li><a href="/route/viewall" style="color: black;"><i class='bx bx-arrow-back'></i>Home</a></li>                
+            </ul>
+        </div>
+        <div class="navbar">
+            <a href="#">Home</a>
+            <a href="#">About</a>
+            <a href="#">Services</a>
+            <a href="#">Contact</a>
+        </div>
+        <div class="form-wrapper">
+            <form th:action="@{/car/save}" class="add-route-form">
+                <h1 style="color: white;">Add NEW CAR</h1>
+                <div>
+                    <label for="capacity" class="label-title">Input Capacity</label>
+                    <input type="text" id="capacity" name="capacity" required class="input-add-route"
+                        placeholder="Enter capacity">
+                </div>
+                <div>
+                    <label for="plateNumber" class="label-title">Input Plate Number</label>
+                    <input type="text" id="plateNumber" name="plateNumber" required class="input-add-route"
+                        placeholder='Enter plate number'>
+                </div>
+                <div style="display: none;">
+                    <label for="carCompany">Company</label> 
+                    <select id="carCompany" name="carCompany.id" required class="select-add-trip-content">
+                        <option value="">--Select a company--</option>
+                        <th:block th:each="carCompany : ${carCompanys}">
+                            <option th:if="${carCompany.id == currentUserId}" th:value="${carCompany.id}" th:selected="true" th:text="${carCompany.name}"></option>
+                            <option th:if="${carCompany.id != currentUserId}" th:value="${carCompany.id}" th:text="${carCompany.name}" hidden></option>
+                        </th:block>
+                    </select>
+                </div>          
+                <div>
+                    <button type="submit" class="btn-save-add-new-car">Save</button>
+                    <div th:if="${error}" class="alert alert-danger" role="alert">
+                        <p th:text="${error}" style="color: red; font-size: 20px;"></p>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</body>
+
+</html>

@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -39,21 +40,22 @@ public class AdminSecurityConfig {
         httpSecurity.authenticationProvider(authenticationProvider1());
 
         httpSecurity.authorizeRequests()
-        .antMatchers("/", "/pay", "/homepage","/homepage/login","/css/**", "/js/**","/images/**").permitAll();
+        .antMatchers("/css/**", "/js/**","/images/**").permitAll()
+        .antMatchers("/", "/pay/**", "/homepage","/homepage/login", "/homepage/logout", "/users/login","/homepage/defaultSuccessUrl","/homepage/**").permitAll();
 
         httpSecurity .antMatcher("/member/**").authorizeRequests().anyRequest().hasAuthority("admin")
         .and()
         .formLogin()
-            .loginPage("/member/login")
+            .loginPage("/users/login")
             .usernameParameter("username")
-            .loginProcessingUrl("/member/login")
-            .defaultSuccessUrl("/member/adminDB")
-            .permitAll()
-            .and()
-            .logout()
-            .invalidateHttpSession(true)
-            .deleteCookies("JSESSIONID")
-            .logoutUrl("/member/logout");
+            .loginProcessingUrl("/users/login")
+            .defaultSuccessUrl("/homepage/defaultSuccessUrl")
+            .permitAll();
+            // .and()
+            // .logout()
+            // .invalidateHttpSession(true)
+            // .deleteCookies("JSESSIONID")
+            // .logoutUrl("/member/logout");
         
         return httpSecurity.build();
     }

@@ -11,25 +11,52 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <div th:replace="fragments/fragments::userHead"></div>
 
+<head>
+    <!-- jQuery library (required) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+
+    <!-- DataTables CSS and JS files (required) -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.js"></script>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+    <!-- Custom Js Link -->
+    <script th:src="@{/js/main.js}"></script>
+
+</head>
+
 <body style="
             color: #1a202c;
             text-align: left;
-            
-    background-color: rgb(182 191 203)">
+            background-color: lightgray;
+            font-size: 1.3rem;
+            ">
+    <!-- background-image: url(/images/slider/slider2.webp);
+            background-size: cover; -->
     <header th:replace="fragments/fragments::userHeader"></header>
 
     <div class="container" style="padding-top: 20px;">
         <div class="main-body">
             <div class="row gutters-sm">
                 <div class="col-md-3 mb-3">
-                    <div class="card">
+                    <div class="card" style="padding-bottom: 6px;">
+                        <a th:href="@{/homepage}" style="color: rgb(22, 24, 41); margin-left: 15px;">
+                            <i class="fa-solid fa-arrow-left" style=" margin-top: 25px;">
+                            </i>
+                            Return back
+                        </a>
+                        <br>
                         <div class="card-body">
                             <div class="d-flex flex-column align-items-center text-center">
                                 <img src="http://ssl.gstatic.com/accounts/ui/avatar_2x.png" alt="Your avatar go here"
                                     class="rounded-circle" width="150">
                                 <div class="mt-3">
-                                    <h4 th:text="${userInfo.username}"></h4>
-                                    <p class="text-muted font-size-sm" th:text="${userInfo.email}"></p>
+                                    <h4 th:text="${userInfo.fullName}"></h4>
+                                    <div style="width: 200px;">
+
+                                        <p class="text-muted font-size-sm" th:text="${userInfo.email}"></p>
+                                    </div>
                                     <p class="text-secondary mb-1" th:text="${userInfo.phoneNumber}"></p>
                                 </div>
                             </div>
@@ -44,7 +71,9 @@
                                     <h6 class="mb-0">Full Name</h6>
                                 </div>
 
-                                <div class="col-sm-9 text-secondary " th:text="${userInfo.fullName}"></div>
+                                <div class="col-sm-9 text-secondary ">
+                                    <p style="margin-bottom: 0%;" th:text="${userInfo.fullName}"></p>
+                                </div>
 
                             </div>
                             <hr>
@@ -54,7 +83,9 @@
                                     <h6 class="mb-0">User Name</h6>
                                 </div>
 
-                                <div class="col-sm-9 text-secondary " th:text="${userInfo.username}"></div>
+                                <div class="col-sm-9 text-secondary ">
+                                    <p style="margin-bottom: 0%;" th:text="${userInfo.username}"></p>
+                                </div>
 
                             </div>
                             <hr>
@@ -64,7 +95,9 @@
                                     <h6 class="mb-0">Email</h6>
                                 </div>
 
-                                <div class="col-sm-9 text-secondary" th:text="${userInfo.email}"></div>
+                                <div class="col-sm-9 text-secondary">
+                                    <p style="margin-bottom: 0%;" th:text="${userInfo.email}"></p>
+                                </div>
 
                             </div>
                             <hr>
@@ -74,7 +107,9 @@
                                     <h6 class="mb-0">Phone</h6>
                                 </div>
 
-                                <div class="col-sm-9 text-secondary" th:text="${userInfo.phoneNumber}"></div>
+                                <div class="col-sm-9 text-secondary">
+                                    <p style="margin-bottom: 0%;" th:text="${userInfo.phoneNumber}"></p>
+                                </div>
 
                             </div>
                             <hr>
@@ -84,22 +119,30 @@
                                     <h6 class="mb-0">Gender</h6>
                                 </div>
 
-                                <div class="col-sm-9 text-secondary" th:text="${userInfo.sex}"></div>
+                                <div class="col-sm-9 text-secondary">
+                                    <p style="margin-bottom: 0%;" th:text="${userInfo.sex}"></p>
+                                </div>
 
                             </div>
                             <hr>
 
                             <div class="row">
-                                <div class="col-sm-10">
+                                <div class="col-md-1">
                                     <!--Edit profile here-->
                                     <a class="btn btn-info " target="__blank"
                                         th:href="@{/users/update-profile}">Edit</a>
                                 </div>
-                                <div class="col-sm-2">
+                                <!-- <div class="col-md-1" th:if="${userInfo.provider == 'LOCAL'}">
+                                    Edit profile here
+                                    <a class="btn btn-info " style="width: 151px;" target="__blank"
+                                        th:href="@{/users/changePassword}">Change Password</a>
+                                </div> -->
+                                <div>
                                     <!--Edit profile here-->
                                     <a class="btn btn-success" th:if="${session.userSession.role == 'admin'}"
                                         th:href="@{/homepage/adminDashBord}" th:text="Admin Dashboard"></a>
                                 </div>
+
 
                             </div>
 
@@ -107,47 +150,102 @@
                     </div>
 
 
+
+                </div>
+
+
+
+                <!--  -->
+                <div class="col-md-12">
                     <div class="card mt-3">
                         <div class="card-header content-box-title">
                             <i class="fas fa-table me-1"></i>
-                            Orders History
+                            Booking History
+
                         </div>
                         <div class="card-body">
-                            <table id="datatablesSimple" class="historyTable">
-                                <thead>
-                                    <tr>
-                                        <th>Departure</th>
-                                        <th>Arrival</th>
-                                        <th>Day</th>
-                                        <th>Start time</th>
-                                        <th>End time</th>
-                                        <!-- <th>Price</th> -->
-                                        <th>Seats</th>
-                                        <th>Quantity</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="orderDetail: ${oderDetails}">
-                                        <!-- <td th:text="${member.fullName}"></td>
-                                    <td th:text="${member.email}">Full Name</td>
-                                    <td th:text="${member.phoneNumber}">Phone Number</td>
-                                    <td th:text="${member.username}">Username</td>
-                                    <td><a th:href="@{update/{id}(id=${member.id})}" class="btn btn-success">Update</a>
-                                        <a th:href="@{delete/{id}(id=${member.id})}" class="btn btn-warning">Delete</a>
-                                    </td> -->
-                                        <td th:text="${orderDetail.departure}">Departure</td>
-                                        <td th:text="${orderDetail.arrival}">Arrival</td>
-                                        <td th:text="${orderDetail.trip.date}">Day</td>
-                                        <td th:text="${#strings.substring(orderDetail.trip.startTime, 0, 5)}">Start time</td> 
-                                        <td th:text="${#strings.substring(orderDetail.trip.endTime, 0, 5)}">End time</td> 
-                                        <!-- <td th:text="${orderDetail.trip.price}">Price</td> -->
-                                        <td th:text="${orderDetail.listSeats}" class="seat-td">Seats</td>
-                                        <td th:text="${orderDetail.quantity}">Quantity</td>
-                                        <td th:text="${orderDetail.total}">Total</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                            <div class="table-responsive">
+
+                                <table id="datatablesSimple" class="table table-striped">
+                                    <!-- <table id="myTable" class="historyTable"> -->
+                                    <thead>
+                                        <tr>
+                                            <th>Departure</th>
+                                            <th>Arrival</th>
+                                            <th>Day</th>
+                                            <!-- <th>Price</th> -->
+                                            <th>Seats</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                            <th>Payment</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="tr-border" th:each="orderDetail: ${orderDetails}">
+                                            <!-- <th:block th:if="${orderDetail.status == 'pending'}"> -->
+                                            <th:block>
+                                                <td th:text="${orderDetail.departure}">Departure</td>
+                                                <td th:text="${orderDetail.arrival}">Arrival</td>
+                                                <td th:text="${orderDetail.trip.date}">Day</td>
+                                                <td th:text="${orderDetail.listSeatsNumber}" class="seat-td">Seats</td>
+                                                <td th:text="${orderDetail.quantity}">Quantity</td>
+                                                <td
+                                                    th:text="${T(com.laohac.swp391spring2023.controller.PaymentController).formatVND(orderDetail.total)}">
+                                                    Total</td>
+
+                                                <td th:text="${orderDetail.paymentType}">Payment</td>
+
+                                                <td>
+                                                    <span style="color: #2ebd33; font-weight: 600;"
+                                                        th:if="${#strings.equals(orderDetail.status, 'CONFIRMED')}"
+                                                        th:text="${orderDetail.status}"></span>
+
+                                                    <span style="color: #2b6ccd; font-weight: 600;"
+                                                        th:if="${#strings.equals(orderDetail.status, 'PENDING')}"
+                                                        th:text="${orderDetail.status}"></span>
+                                                    <span style="color: red; font-weight: 600;"
+                                                        th:if="${#strings.equals(orderDetail.status, 'CANCELLED')}"
+                                                        th:text="${orderDetail.status}"></span>
+
+                                                </td>
+
+                                                <td>
+                                                    <!--  -->
+                                                    <form th:if="${#strings.equals(orderDetail.status, 'PENDING')}"
+                                                        method="post" th:action="@{/booking/cancel-booking}">
+                                                        <input type="hidden" name="bookingId"
+                                                            th:value="${orderDetail.id}">
+                                                        <button id="cancelBtn" type="submit" onclick=""
+                                                            class="btn btn-danger">Cancel</button>
+
+
+                                                    </form>
+
+
+
+                                                    <!--  -->
+                                                    <form th:if="${!#strings.equals(orderDetail.status, 'PENDING')}"
+                                                        method="post" th:action="@{/booking/cancel-booking}">
+
+                                                        <input type="hidden" name="bookingId"
+                                                            th:value="${orderDetail.id}">
+                                                        <button type="submit" class="btn btn-danger"
+                                                            disabled>Cancel</button>
+                                                    </form>
+                                                </td>
+                                            </th:block>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                                <span th:if="${errorMessageCancelBK}">
+                                    123sdmasd
+                                </span>
+                            </div>
+
+
                         </div>
 
                     </div>
@@ -159,7 +257,11 @@
     </div>
 
     <div th:replace="fragments/fragments::userFooter"></div>
-    <div th:replace="fragments/fragments::userScript"></div>
+    <div th:replace="fragments/fragments::userScript">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.min.css">
+        <script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+    </div>
+
 
 
 </body>

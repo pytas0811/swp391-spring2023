@@ -67,7 +67,7 @@
 
 .box {
 	width: 85%;
-	height: 100px;
+	height: 60px;
 	background-color: #272c4a;
 	margin-left: 10px;
 	padding: 10px;
@@ -75,12 +75,12 @@
 }
 
 .box p {
-  font-size: 25px;
+  font-size: 18px;
   color: white;
   font-weight: bold;
   /* line-height: 30px; */
   /* padding-left: 10px; */
-  margin-top: 25px;
+  margin-top: 5px;
   width: 163px;
   display: inline-block;
   height: 100px;
@@ -95,9 +95,9 @@
 .box-icon {
   font-size: 40px !important;
   float: right;
-  margin-top: 35px !important;
+  /* margin-top: 20px !important; */
   color: #818181;
-  padding-right: 10px;
+  /* padding-right: 10px; */
   margin-left: 30px;
 } 
 
@@ -352,7 +352,7 @@ caption {
 
 th {
   text-align: inherit;
-  text-align: -webkit-match-parent;
+  /* text-align: -webkit-match-parent; */
 }
 
 thead,
@@ -361,9 +361,9 @@ tfoot,
 tr,
 td,
 th {
-  border-color: inherit;
+  /* border-color: inherit;
   border-style: solid;
-  border-width: 0;
+  border-width: 0; */
 }
 
 
@@ -3092,7 +3092,7 @@ textarea.form-control-lg {
   opacity: 0.65;
 }
 #datatablesSimple {
-  border: 1px solid white;
+  /* border: 1px solid white; */
 }
 .btn-primary {
   color: #fff;
@@ -6687,6 +6687,38 @@ textarea.form-control-lg {
   align-self: stretch;
 }
 
+/*  */
+.myTableAdmin {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin-top: 12px;
+}
+
+.myTableAdmin th,
+.myTableAdmin td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  color: black;
+}
+
+.myTableAdmin th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  color: #333;
+  font-size: 25px;
+}
+
+.myTableAdmin tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.myTableAdmin tr:hover {
+  background-color: #ddd;
+}
+
+/*  */
 .visually-hidden,
 .visually-hidden-focusable:not(:focus):not(:focus-within) {
   position: absolute !important;

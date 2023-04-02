@@ -15,8 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.laohac.swp391spring2023.utils.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,10 +33,12 @@ import com.laohac.swp391spring2023.model.dto.UserDTOResponse;
 import com.laohac.swp391spring2023.model.dto.UserDTOUpdate;
 import com.laohac.swp391spring2023.model.entities.OrderDetail;
 import com.laohac.swp391spring2023.model.entities.Route;
+import com.laohac.swp391spring2023.model.entities.Seat;
 import com.laohac.swp391spring2023.model.entities.Trip;
 import com.laohac.swp391spring2023.model.entities.User;
 import com.laohac.swp391spring2023.repository.OrderDetailRepository;
 import com.laohac.swp391spring2023.repository.RouteRepository;
+import com.laohac.swp391spring2023.repository.SeatRepository;
 import com.laohac.swp391spring2023.repository.UserRepository;
 import com.laohac.swp391spring2023.service.MemberService;
 import com.laohac.swp391spring2023.service.UserService;
@@ -61,6 +65,9 @@ public class UserController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private SeatRepository seatRepository;
+
     @ModelAttribute
     public void addCommonAttributes(Model model) {
         RouteDTORequest routeDTORequest = new RouteDTORequest();
@@ -84,6 +91,9 @@ public class UserController {
 
     @GetMapping("")
     public String home(Model model, User user) {
+        if (memberService.getCurrentUser() != null) {
+            return "home/index";
+        }
         model.addAttribute("customer", user);
         return "home/Register";
     }
@@ -97,6 +107,9 @@ public class UserController {
 
     @GetMapping("/login")
     public String showLogin(Model model) {
+        if (memberService.getCurrentUser() != null) {
+            return "home/index";
+        }
         User user = new User();
         model.addAttribute("user", user);
         return "home/login1";
@@ -108,27 +121,26 @@ public class UserController {
     }
 
     @PostMapping("/save")
-    public String register (@ModelAttribute("customer") User user, HttpServletRequest request, HttpSession session) throws UnsupportedEncodingException, MessagingException{
+    public String register(@ModelAttribute("customer") User user, HttpServletRequest request, HttpSession session)
+            throws UnsupportedEncodingException, MessagingException {
 
         session.setAttribute("currentRegister", null);
         session.setAttribute("errorEmail", null);
         session.setAttribute("errorUsername", null);
         UserDTOResponse userDTOResponse = userService.registerUser(user, session);
-        if (userDTOResponse == null) return "home/Register";
+        if (userDTOResponse == null)
+            return "home/Register";
         String siteURL = getSiteURL(request);
         userService.sendVerificationEmail(userDTOResponse, siteURL);
 
         System.out.println(userDTOResponse.getFullName());
 
-        
-
-        
-        return "redirect:/users/login";
+        return "redirect:/users#popupRegister"; // users#popupRegister
     }
 
     @GetMapping("/verify")
 
-    public String verifyAccount(@Param("code") String code, Model model, HttpSession session){
+    public String verifyAccount(@Param("code") String code, Model model, HttpSession session) {
         boolean verified = userService.verify(code, session);
 
         String pageTitle = verified ? "Verification Succeeded!" : "Verification Failed";
@@ -145,6 +157,8 @@ public class UserController {
         return "home/index";
     }
 
+    
+    
     @GetMapping("/info")
     public String showInfo(Model model, HttpSession session) {
         Object userCurrent = session.getAttribute("userSession");
@@ -158,7 +172,7 @@ public class UserController {
         List<OrderDetail> orderDetail = new ArrayList<>();
         if (orderDetailOptional.isPresent())
             orderDetail = orderDetailOptional.get();
-        model.addAttribute("oderDetails", orderDetail);
+        model.addAttribute("orderDetails", orderDetail);
         model.addAttribute("userInfo", userDTOResponse);
         return "home/Profile";
     }
@@ -177,7 +191,8 @@ public class UserController {
         Object userCurrent = session.getAttribute("userSession");
         UserDTOResponse userDTOResponse = (UserDTOResponse) userCurrent;
         String username = userDTOResponse.getUsername();
-        userDTOResponse = userService.update(userUpdate, username);
+        String email = userDTOResponse.getEmail();
+        userDTOResponse = userService.update(userUpdate, username, email);
         session.setAttribute("userSession", userDTOResponse);
         return "redirect:/users/info";
     }
@@ -197,32 +212,36 @@ public class UserController {
     }
 
     @GetMapping("/search-trip")
-    public String search(@ModelAttribute("routeDTORequest") RouteDTORequest routeDTORequest, Model model) throws ParseException{
-
-        Clock clock = Clock.systemDefaultZone();
-        LocalDate currentDate = LocalDate.now(clock);
-        Route route2 = routeRepository.findByState1AndState2("TP HCM", "DA LAT");
+    public String search(@ModelAttribute("routeDTORequest") RouteDTORequest routeDTORequest, Model model)
+            throws ParseException {
 
         String dateString = routeDTORequest.getDate();
         LocalDate date = LocalDate.parse(dateString);
-        Route route = routeRepository.findByState1AndState2(routeDTORequest.getState1().toUpperCase(), routeDTORequest.getState2().toUpperCase());
-        
-        List<Trip> tripsInfo = userService.searchByRouteAndDate(route, date);
-        List<Trip> SaiGonDaLat = userService.searchByRouteAndDate(route2, currentDate);
+        model.addAttribute("isSpecialDay", Utils.isSpecialDay(date));
+        Route route = routeRepository.findByState1AndState2(routeDTORequest.getState1().toUpperCase(),
+                routeDTORequest.getState2().toUpperCase());
 
-        //List<Trip> tripsInfo = userService.searchByRouteAndDateByPriceDesc(route, date);
-        // List<Trip> tripsInfo = userService.searchByRouteAndDateByPriceAsc(route, date);
-        //List<Trip> tripsInfo = userService.searchByRouteAndDateByStartTimeAsc(route, date);
-        // List<Trip> tripsInfo = userService.searchByRouteAndDateByStartTimeDesc(route, date);
+        List<Trip> tripsInfo = userService.searchByRouteAndDate(route, date, true);
         
+        for (Trip trip : tripsInfo) {
+            int total = 0;
+            List<Seat> lSeats = new ArrayList<>();
+            lSeats = seatRepository.findByTrip(trip);
+            if (!lSeats.isEmpty())
+                total = lSeats.size();
+            for (Seat seat : lSeats) {
+                if (seat.getAvailableSeat() == 1) total--;    
+            }
+            trip.setTotalAvailableSeat(total);   
+        }
         model.addAttribute("listTrips", tripsInfo);
-        model.addAttribute("SaiGonDaLat", SaiGonDaLat);
+
 
         List<Route> listRoute = routeRepository.findAll();
         model.addAttribute("listStates", listRoute);
 
         model.addAttribute("route", route);
-
+        
         return "home/searchPage";
     }
 
@@ -237,4 +256,12 @@ public class UserController {
      * }
      */
 
+     @GetMapping("/changePassword")
+     public String showChangePasswordProfile(Model model, HttpSession session) {
+ 
+         Object userCurrent = session.getAttribute("userSession");
+         UserDTOResponse userDTOResponse = (UserDTOResponse) userCurrent;
+         model.addAttribute("userInfo", userDTOResponse);
+         return "home/ChangePasswordProfile";
+     }
 }

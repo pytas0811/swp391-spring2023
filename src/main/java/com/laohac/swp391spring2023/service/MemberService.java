@@ -10,7 +10,7 @@ public interface MemberService {
 
     public MemberDTOReponse authenticate(User memberDTORequest);
 
-    public List<User> getAllMember();
+    public List<MemberDTOReponse> getAllMember();
 
     public void addMember(User member);
 
@@ -19,4 +19,8 @@ public interface MemberService {
     public void deleteMemberById(int id);
 
     public UserDTOResponse getCurrentUser();
+
+    public void updateMember(User member);
+
+    
 }
